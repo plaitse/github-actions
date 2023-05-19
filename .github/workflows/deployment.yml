@@ -10,6 +10,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          # Everytime the package-lock.json changes, we cache dependencies again
+          # The cache is used the second time we run the job "npm ci"
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+      # By default, npm creates a cache of dependencies in the .npm folder
       - name: Install dependencies
         run: npm ci
       - name: Run linter
@@ -23,6 +31,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+      # Here we use a single cache available in all the workflow (the one specified in the previous step)
+      # The cache is not different from one step to another
       - name: Install dependencies
         run: npm ci
       - name: Run tests
@@ -37,6 +52,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
       - name: Install dependencies
         run: npm ci
       - name: Build project
