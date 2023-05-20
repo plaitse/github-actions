@@ -1,7 +1,7 @@
 name: Test Project
 on: [push, workflow_dispatch]
 env:
-  API_URL: https://api-url.com
+  API_URL: ${{ secrets.API_URL }}
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -25,8 +25,6 @@ jobs:
       - name: Run linter
         run: npm run lint
   test:
-    env:
-      DB_TEST: 123
     runs-on: ubuntu-latest
     steps:
       - name: Get code
@@ -72,6 +70,8 @@ jobs:
           path: dist
   deploy:
     needs: build
+    env:
+      DB_TEST: 123
     runs-on: ubuntu-latest
     steps:
       - name: Get build artifacts
@@ -81,4 +81,4 @@ jobs:
       - name: Output content
         run: ls
       - name: Deploy
-        run: echo "Deploying... with API URL $API_URL and DB URL $DB_TEST"
+        run: echo "Deploying... with API URL ${{ env.API_URL }} and DB URL $DB_TEST"
