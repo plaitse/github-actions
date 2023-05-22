@@ -14,6 +14,9 @@ jobs:
           node-version: 18
       - name: Load & cache dependencies
         uses: ./.github/actions/cached-deps
+        # disable caching for this step
+        with:
+          caching: "false"
       - name: Run linter
         run: npm run lint
   test:
