@@ -27,13 +27,24 @@ jobs:
         run: npm run lint
   test:
     runs-on: ubuntu-latest
+    # All the code below will be run on a container with node 18
+    container:
+      image: node:18
+      # env: SOME_ENV_VAR
+    env:
+      MONGODB_CONNECTION_PROTOCOL: mongodb
+      MONGODB_CLUSTER_ADDRESS: mongodb
+      MONGODB_USERNAME: root
+      MONGODB_PASSWORD: example
+    services:
+      mongodb:
+        image: mongo
+        env:
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: example
     steps:
       - name: Get code
         uses: actions/checkout@v3
-      - name: Install node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
       - name: Cache dependencies
         uses: actions/cache@v3
         with:
@@ -56,15 +67,15 @@ jobs:
   build:
     needs: [lint, test]
     runs-on: ubuntu-latest
-    # All the code below will be run on a container with node 18
-    container:
-      image: node:18
-      # env: SOME_ENV_VAR
     env:
       DB_TEST: 123
     steps:
       - name: Get code
         uses: actions/checkout@v3
+      - name: Install node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
       - name: Cache dependencies
         uses: actions/cache@v3
         with:
