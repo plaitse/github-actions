@@ -43,7 +43,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run tests
+        id: run-tests
         run: npm test
+      - name: Upload test report
+        if: failure() && steps.run-tests.outcome == 'failure'
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: test.json
   build:
     needs: [lint, test]
     runs-on: ubuntu-latest
@@ -82,3 +89,12 @@ jobs:
         run: ls
       - name: Deploy
         run: echo "Deploying... with API URL ${{ env.API_URL }} and DB URL $DB_TEST"
+  report:
+    needs: [lint, test, build, deploy]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output information
+        run: |
+          echo "Something went wrong"
+          echo "${{ github }}"
