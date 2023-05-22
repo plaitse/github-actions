@@ -56,6 +56,8 @@ jobs:
   build:
     needs: [lint, test]
     runs-on: ubuntu-latest
+    env:
+      DB_TEST: 123
     steps:
       - name: Get code
         uses: actions/checkout@v3
@@ -78,20 +80,11 @@ jobs:
         with:
           name: dist-files
           path: dist
+      - name: Dummy log
+        run: echo "API URL is ${{ env.API_URL }} and DB URL is $DB_TEST"
   deploy:
     needs: build
-    env:
-      DB_TEST: 123
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: dist-files
-      - name: Output content
-        run: ls
-      - name: Deploy
-        run: echo "Deploying... with API URL ${{ env.API_URL }} and DB URL $DB_TEST"
+    uses: ./.github/workflows/reusable.yml
   report:
     needs: [lint, test, build, deploy]
     if: failure()
