@@ -12,17 +12,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: node_modules
-          # Everytime the package-lock.json changes, we cache dependencies again
-          # The cache is used the second time we run the job "npm ci"
-          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
-      # By default, npm creates a cache of dependencies in the .npm folder
-      - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci
+      - name: Load & cache dependencies
+        uses: ./.github/actions/cached-deps
       - name: Run linter
         run: npm run lint
   test:
@@ -45,16 +36,8 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: node_modules
-          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
-      # Here we use a single cache available in all the workflow (the one specified in the previous step)
-      # The cache is not different from one step to another
-      - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci
+      - name: Load & cache dependencies
+        uses: ./.github/actions/cached-deps
       - name: Run tests
         id: run-tests
         run: npm test
@@ -76,14 +59,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: node_modules
-          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
-      - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci
+      - name: Load & cache dependencies
+        uses: ./.github/actions/cached-deps
       - name: Build project
         run: npm run build
       - name: Upload artifacts
