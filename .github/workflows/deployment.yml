@@ -56,15 +56,15 @@ jobs:
   build:
     needs: [lint, test]
     runs-on: ubuntu-latest
+    # All the code below will be run on a container with node 18
+    container:
+      image: node:18
+      # env: SOME_ENV_VAR
     env:
       DB_TEST: 123
     steps:
       - name: Get code
         uses: actions/checkout@v3
-      - name: Install node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
       - name: Cache dependencies
         uses: actions/cache@v3
         with:
