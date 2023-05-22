@@ -98,3 +98,11 @@ jobs:
         run: |
           echo "Something went wrong"
           echo "${{ toJSON(github) }}"
+  information:
+    runs-on: ubuntu-latest
+    steps:
+      # We must checkout the code to use a custom action
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Run custom action
+        uses: "./.github/actions/deploy-s3-javascript"
