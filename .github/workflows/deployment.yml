@@ -1,5 +1,6 @@
 name: Test Project
 on: [push, workflow_dispatch]
+permissions: read-all
 env:
   API_URL: ${{ secrets.API_URL }}
 jobs:
